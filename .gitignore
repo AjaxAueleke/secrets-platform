@@ -1,0 +1,38 @@
+# --- Build Artifacts ---
+# The /target directory contains all compiled binaries, dependencies, and build cache.
+# It can grow to several gigabytes quickly.
+/target/
+.*/target/*
+/target
+target
+# --- Assets & Secrets ---
+# Common files for environment variables.
+.env
+*.env
+
+# --- Testing & Documentation ---
+# Generated documentation from 'cargo doc'
+/doc/
+
+# --- Backup & Temp Files ---
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# VIM swap files
+*.swp
+
+# --- Tool-Specific ---
+# If you use Cargo's profiling or benchmarking tools
+coz.out
+bench.out
+
+# --- IDEs ---
+# RustRover / IntelliJ / PyCharm
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+.cursor/
+.
