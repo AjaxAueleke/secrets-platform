@@ -8,3 +8,4 @@ resolver = "2"
 chrono = { version = "0.4.44", features = ["serde"]}
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "macros", "migrate", "chrono", "uuid"] }
 serde = { version = "1.0.228", features = ["derive"] }
+dotenvy = "0.15"
