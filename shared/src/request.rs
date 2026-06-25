@@ -4,5 +4,5 @@ use serde::Deserialize;
 pub struct CreateSecretRequest {
     pub key_name: String,
     pub service_name: String,
-    pub key_value: String
+    pub key_value: String,
 }

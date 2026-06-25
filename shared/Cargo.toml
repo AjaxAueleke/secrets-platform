@@ -3,7 +3,15 @@ name = "shared"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = []
+db = ["dep:sqlx"]
+axum = ["dep:axum"]
+
 [dependencies]
 serde = {workspace = true}
 chrono = {workspace = true}
-sqlx = {workspace = true}
+sqlx = {workspace = true, optional = true}
+axum = {workspace = true, optional = true}
+thiserror = { workspace =  true }
+anyhow = { workspace = true }

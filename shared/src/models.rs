@@ -1,4 +1,5 @@
-#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, sqlx::FromRow)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
+#[cfg_attr(feature = "db", derive(sqlx::FromRow))]
 pub struct Secret {
     pub id: i64,
     pub key_name: String,

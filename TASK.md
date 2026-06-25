@@ -25,8 +25,9 @@
 
 ## ▶ Current focus
 
-**M0 · Task M0.1 — fix the health-check handler so the server compiles and serves a response.**
-(Then continue down the M0 list in order.)
+**M0 · Task M0.4 — add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
+`DATABASE_URL` and the bind address from env, instead of inline `env::var` in `main`.**
+(Then continue down the M0 list in order: M0.5 DB workflow, M0.7 verify.)
 
 ---
 
@@ -53,22 +54,22 @@
 No secret features yet. **Done when:** the whole M0 checklist is checked and the health check
 works manually + a test passes.
 
-- [ ] **M0.1** Fix the health-check handler in `api-server/src/main.rs`. `get("healthcheck")`
+- [x] **M0.1** Fix the health-check handler in `api-server/src/main.rs`. `get("healthcheck")`
       passes a string where a handler is required — replace it with a real async handler that
       returns a 200 and a small body.
-- [ ] **M0.2** Make `api-server/src/repository/secret.rs` compile. Known bugs from review:
+- [x] **M0.2** Make `api-server/src/repository/secret.rs` compile. Known bugs from review:
       missing `<'a>` on the `impl`, malformed SQL (`RETURNING id)` stray paren), table name
       `secret` should be `secrets`, and the `query_as!(... secret.id,)()` call is malformed.
       For M0, make `insert` a minimal compiling stub (real implementation lands in M1). Remove
       unused imports (`sqlx::Executor` in main, `Json` in routes).
-- [ ] **M0.3** Add `tracing` + `tracing-subscriber`; replace `println!` with `tracing` macros;
+- [x] **M0.3** Add `tracing` + `tracing-subscriber`; replace `println!` with `tracing` macros;
       add a request-logging layer (`tower-http` `TraceLayer`).
 - [ ] **M0.4** Add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
       `DATABASE_URL` and the bind address from env, instead of inline `env::var` in `main`.
 - [ ] **M0.5** Nail the DB workflow & document the commands in the session log / a README note:
       `docker compose up -d`, `sqlx migrate run`, and generate the offline cache with
       `cargo sqlx prepare` (commit the `.sqlx/` directory).
-- [ ] **M0.6** Write a small test for the health-check handler.
+- [x] **M0.6** Write a small test for the health-check handler.
 - [ ] **M0.7** Verify everything: build, clippy, fmt, run, curl the health check → 200.
 
 ---
@@ -166,6 +167,18 @@ works via curl and has tests.
 
 Newest first. One entry per working session: `date · what you did · what's next`.
 
+- **2026-06-25** · Closed **M0.3**: `tracing` + `tracing-subscriber` (registry + `EnvFilter`
+  with `info,tower_http=debug` fallback + JSON `fmt` layer) and `TraceLayer` request logging.
+  Verified manually: GET /health-check emits a `tower_http` request span (status 200). No
+  automated test (logging output is brittle to assert — intentional gap). Also added a committed
+  `.githooks/pre-commit` (fmt + clippy gate). · **Next:** **M0.4** Config struct.
+- **2026-06-25** · Closed **M0.2**: repository compiles as a `todo!()` stub — deleted the
+  dead/broken `INSERT_QUERY`, narrowed to `#[allow(dead_code)]`, `impl<'a>` fixed, unused
+  imports gone. All gates green (real repo test deferred to M1.8). · **Next:** **M0.3** tracing.
+- **2026-06-24** · Closed **M0.1 + M0.6**: real `healthcheck()` handler moved to
+  `controller/healthcheck.rs`, `#[tokio::test]` asserting 200, curl'd OK. All gates green
+  (build/clippy `-D warnings`/fmt/test). Repo `insert` left as a `todo!()` stub. · **Next:**
+  **M0.2** tidy (drop dead `INSERT_QUERY`, narrow the `allow`s), then **M0.3** tracing.
 - **2026-06-22** · Finalized the full design (13 rounds of decisions); wrote
   `docs/PROJECT.md` + this tracker; saved project memory. · **Next:** start **M0.1**
   (fix the health-check handler).

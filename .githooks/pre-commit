@@ -1,0 +1,29 @@
+#!/bin/sh
+# Pre-commit hook — enforces the formatting + lint gates from the Definition of Done
+# (see CLAUDE.md / TASK.md) so a commit can't drift out of `cargo fmt` / clippy compliance.
+#
+# Enabled in this repo via:   git config core.hooksPath .githooks
+# Bypass once (use sparingly): git commit --no-verify
+#
+# NOTE: `cargo test` is intentionally NOT run here — from M1 the tests use #[sqlx::test],
+# which need a live Postgres / DATABASE_URL, and a hook must run with no external deps.
+# fmt and clippy stay offline-runnable (clippy relies on the committed .sqlx cache once
+# query macros land in M1).
+
+set -u
+
+echo "pre-commit › cargo fmt --check"
+if ! cargo fmt --check; then
+    echo
+    echo "✗ Formatting check failed. Run 'cargo fmt', then re-stage and commit again."
+    exit 1
+fi
+
+echo "pre-commit › cargo clippy --all-targets -- -D warnings"
+if ! cargo clippy --all-targets -- -D warnings; then
+    echo
+    echo "✗ Clippy found warnings/errors. Fix them (or annotate with intent) and retry."
+    exit 1
+fi
+
+echo "pre-commit › OK"
