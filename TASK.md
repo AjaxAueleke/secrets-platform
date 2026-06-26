@@ -25,9 +25,9 @@
 
 ## ▶ Current focus
 
-**M0 · Task M0.4 — add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
-`DATABASE_URL` and the bind address from env, instead of inline `env::var` in `main`.**
-(Then continue down the M0 list in order: M0.5 DB workflow, M0.7 verify.)
+**M0 · Task M0.5 — nail the DB workflow & document the commands: `docker compose up -d`,
+`sqlx migrate run`, and generate the offline cache with `cargo sqlx prepare` (commit `.sqlx/`).**
+(Then M0.7 final verify closes the milestone.)
 
 ---
 
@@ -64,7 +64,7 @@ works manually + a test passes.
       unused imports (`sqlx::Executor` in main, `Json` in routes).
 - [x] **M0.3** Add `tracing` + `tracing-subscriber`; replace `println!` with `tracing` macros;
       add a request-logging layer (`tower-http` `TraceLayer`).
-- [ ] **M0.4** Add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
+- [x] **M0.4** Add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
       `DATABASE_URL` and the bind address from env, instead of inline `env::var` in `main`.
 - [ ] **M0.5** Nail the DB workflow & document the commands in the session log / a README note:
       `docker compose up -d`, `sqlx migrate run`, and generate the offline cache with
@@ -167,6 +167,11 @@ works via curl and has tests.
 
 Newest first. One entry per working session: `date · what you did · what's next`.
 
+- **2026-06-27** · Closed **M0.4**: `Config` struct in `api-server/src/config.rs` reading
+  `DATABASE_URL` + `BIND_ADDR` (defaults to `0.0.0.0:3000`), parsed to `SocketAddr`,
+  `anyhow::Result` with `.context`, trims/rejects blank values. Testable `from_getter`/`from_env`
+  split; 7 unit tests (happy/missing/empty/trim/default/invalid-addr) against an injected getter,
+  no global env touched. · **Next:** **M0.5** DB workflow + offline `.sqlx` cache.
 - **2026-06-25** · Closed **M0.3**: `tracing` + `tracing-subscriber` (registry + `EnvFilter`
   with `info,tower_http=debug` fallback + JSON `fmt` layer) and `TraceLayer` request logging.
   Verified manually: GET /health-check emits a `tower_http` request span (status 200). No
