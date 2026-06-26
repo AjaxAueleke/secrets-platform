@@ -44,7 +44,7 @@ Add a one-line entry to the `TASK.md` **Session log** and update the **`▶ Curr
 
 ```bash
 docker compose up -d                              # start local Postgres
-cd api-server && sqlx migrate run                 # run migrations (needs DATABASE_URL)
+sqlx migrate run --source api-server/migrations   # run migrations (DATABASE_URL from root .env)
 cargo sqlx prepare                                # refresh the offline .sqlx cache (commit it)
 cargo run -p api-server                           # serve on http://localhost:3000
 cargo build && cargo clippy --all-targets -- -D warnings && cargo fmt --check && cargo test

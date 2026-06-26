@@ -25,15 +25,15 @@
 
 ## ▶ Current focus
 
-**M0 · Task M0.5 — nail the DB workflow & document the commands: `docker compose up -d`,
-`sqlx migrate run`, and generate the offline cache with `cargo sqlx prepare` (commit `.sqlx/`).**
-(Then M0.7 final verify closes the milestone.)
+**M1 · Task M1.1 — replace the migration with the real M1 schema: `organizations`, `projects`,
+`environments`, `secrets`, `secret_versions` (see `docs/PROJECT.md` §4). Reset the dev DB with
+`docker compose down -v`, then re-migrate. ⚠️ values stored PLAINTEXT until M7.**
 
 ---
 
 ## Progress at a glance
 
-- [ ] **M0** — Make it compile & run
+- [x] **M0** — Make it compile & run
 - [ ] **M1** — Working slice (create + get one secret, seeded tenant) ⚠️ plaintext values
 - [ ] **M2** — Full secret CRUD + versioning
 - [ ] **M3** — Worker binary (prune + purge)
@@ -66,11 +66,11 @@ works manually + a test passes.
       add a request-logging layer (`tower-http` `TraceLayer`).
 - [x] **M0.4** Add a `Config` struct (e.g. `api-server/src/config.rs`) that reads
       `DATABASE_URL` and the bind address from env, instead of inline `env::var` in `main`.
-- [ ] **M0.5** Nail the DB workflow & document the commands in the session log / a README note:
+- [x] **M0.5** Nail the DB workflow & document the commands in the session log / a README note:
       `docker compose up -d`, `sqlx migrate run`, and generate the offline cache with
       `cargo sqlx prepare` (commit the `.sqlx/` directory).
 - [x] **M0.6** Write a small test for the health-check handler.
-- [ ] **M0.7** Verify everything: build, clippy, fmt, run, curl the health check → 200.
+- [x] **M0.7** Verify everything: build, clippy, fmt, run, curl the health check → 200.
 
 ---
 
@@ -167,6 +167,17 @@ works via curl and has tests.
 
 Newest first. One entry per working session: `date · what you did · what's next`.
 
+- **2026-06-27** · Closed **M0.7** → **M0 milestone complete**. Full gate suite green
+  (build/clippy `-D warnings`/fmt/7 tests), migration installed, health-check served 200
+  (evidenced by M0.3 `tower_http` request log). Project compiles, runs, logs, and reads config
+  from env. · **Next:** **M1.1** — real M1 schema (orgs/projects/environments/secrets/versions).
+- **2026-06-27** · Closed **M0.5**: validated DB workflow — Postgres via docker compose, `0001`
+  migration applied (`sqlx migrate info` → installed). Fixed the migrate command in README +
+  CLAUDE.md (`sqlx migrate run --source api-server/migrations` from root, reads root `.env`) and
+  added the `.env` creation step to the README. Removed obsolete `version:` from compose.
+  **Deferred:** `cargo sqlx prepare` + committing `.sqlx/` → **M1** (no `query!` macros exist
+  yet; the offline cache is empty until then, and that's when the pre-commit clippy needs it).
+  · **Next:** **M0.7** final verify, then M1.
 - **2026-06-27** · Closed **M0.4**: `Config` struct in `api-server/src/config.rs` reading
   `DATABASE_URL` + `BIND_ADDR` (defaults to `0.0.0.0:3000`), parsed to `SocketAddr`,
   `anyhow::Result` with `.context`, trims/rejects blank values. Testable `from_getter`/`from_env`

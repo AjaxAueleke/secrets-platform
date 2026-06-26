@@ -37,9 +37,12 @@ Rust (edition 2024) · [axum](https://github.com/tokio-rs/axum) · [sqlx](https:
 ## Quickstart (local dev)
 
 ```bash
-docker compose up -d                  # start Postgres (see docker-compose.yml)
-# DATABASE_URL is in .env (gitignored); export it or use a tool that loads .env
-cd api-server && sqlx migrate run     # apply migrations
-cargo run -p api-server               # serves on http://localhost:3000
+docker compose up -d                              # start Postgres (see docker-compose.yml)
+
+# Create .env at the repo root (gitignored) with the dev database URL:
+#   DATABASE_URL=postgresql://dev_user:dev_password@localhost:5432/dev_database
+
+sqlx migrate run --source api-server/migrations   # apply migrations (reads DATABASE_URL from .env)
+cargo run -p api-server                           # serves on http://localhost:3000
 curl localhost:3000/health-check
 ```
