@@ -10,6 +10,13 @@ target
 .env
 *.env
 
+# Key / certificate material (e.g. the M7 unseal keyfile) — never commit secrets.
+*.key
+*.pem
+*.p12
+*.pfx
+keyfile
+
 # --- Testing & Documentation ---
 # Generated documentation from 'cargo doc'
 /doc/
